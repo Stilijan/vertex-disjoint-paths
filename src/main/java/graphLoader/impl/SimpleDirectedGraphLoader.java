@@ -3,15 +3,16 @@ package graphLoader.impl;
 import exceptions.GraphReadingException;
 import graphLoader.GraphLoader;
 import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.builder.GraphTypeBuilder;
 
 import java.io.*;
 
 /**
  *  A component, which loads a simple directed graph (without self-loops and parallel arcs)
+ *  The edges of the loaded graph have weight.
  */
-public class SimpleDirectedGraphLoader implements GraphLoader<Integer, DefaultEdge> {
+public class SimpleDirectedGraphLoader implements GraphLoader<Integer, DefaultWeightedEdge> {
 
     private final String inputFilePath;
 
@@ -20,22 +21,22 @@ public class SimpleDirectedGraphLoader implements GraphLoader<Integer, DefaultEd
         this.inputFilePath = inputFilePath;
     }
 
-    private static Graph<Integer, DefaultEdge> buildEmptySimpleDirectedGraph()
+    private static Graph<Integer, DefaultWeightedEdge> buildEmptySimpleWeightedDirectedGraph()
     {
         return GraphTypeBuilder
-            .<Integer, DefaultEdge> directed()
+            .<Integer, DefaultWeightedEdge> directed()
             .allowingMultipleEdges(false)
             .allowingSelfLoops(false)
-            .edgeClass(DefaultEdge.class)
-            .weighted(false)
+            .edgeClass(DefaultWeightedEdge.class)
+            .weighted(true)
             .buildGraph();
     }
 
 
     @Override
-    public Graph<Integer, DefaultEdge> loadGraph() throws GraphReadingException {
+    public Graph<Integer, DefaultWeightedEdge> loadGraph() throws GraphReadingException {
 
-        Graph<Integer, DefaultEdge> outputGraph = buildEmptySimpleDirectedGraph();
+        Graph<Integer, DefaultWeightedEdge> outputGraph = buildEmptySimpleWeightedDirectedGraph();
 
         FileReader fileReader;
         BufferedReader bufferedReader;
@@ -62,6 +63,7 @@ public class SimpleDirectedGraphLoader implements GraphLoader<Integer, DefaultEd
                 outputGraph.addVertex(targetVertex);
 
                 outputGraph.addEdge(sourceVertex, targetVertex);
+                outputGraph.setEdgeWeight(sourceVertex, targetVertex, 1.0);
 
             }
 

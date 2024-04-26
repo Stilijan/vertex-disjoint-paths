@@ -1,44 +1,69 @@
 package walks;
 
 import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultWeightedEdge;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public interface Walk<V> {
-
-
-
-    /**
-     * generates a list of vertices corresponding to a path.
-     *
-     * @return the walk with the generated path.
-     */
-    Walk<V> generate();
-
-    /**
-     * removes cycles from the path.
-     *
-     * @return the walk with the removed cycles from the path.
-     */
-    Walk<V> removeCycles();
+public abstract class Walk<V> {
 
 
-    /**
-     * a simple getter for the path property.
-     *
-     * @return the path of the walk.
-     */
-    List<V> getPath();
+    protected List<V> path;
+    protected V startVertex;
+    protected Graph<V, DefaultWeightedEdge> graph;
+
+    protected Walk(Graph<V, DefaultWeightedEdge> graph, V startVertex) {
+
+        this.graph = graph;
+        this.startVertex = startVertex;
+        this.path = new ArrayList<>();
+    }
+
+    protected Walk() {}
 
 
-    /**
-     * returns the last vertex of a walk.
-     *
-     * @return the endpoint vertex of a walk.
-     */
-    V getEndpoint();
+    public Walk<V> removeCycles() {
 
+        Map<V, Integer> map = new HashMap<>();
 
+        for (int i = 0; i < path.size(); i++) {
 
+            V currentVertex = path.get(i);
+
+            if (!map.containsKey(currentVertex)) {
+
+                map.put(currentVertex, i);
+            } else {
+
+                path.subList(path.indexOf(currentVertex), i).clear();
+            }
+        }
+
+        return this;
+
+    }
+
+    public List<V> getPath() {
+        return path;
+    }
+
+    public void setPath(List<V> path) {
+        this.path = path;
+    }
+
+    public V getEndpoint() {
+
+        return path.getLast();
+    }
+
+    public V getStartVertex() {
+        return startVertex;
+    }
+
+    public abstract void generate();
+
+    @Override
+    public String toString() {
+        return this.path.toString();
+    }
 }

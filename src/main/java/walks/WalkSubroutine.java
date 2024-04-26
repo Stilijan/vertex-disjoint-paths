@@ -1,15 +1,14 @@
-package walks.impl;
+package walks;
 
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultEdge;
 import util.State;
 import util.TransitionMatrix;
-import walks.Walk;
 
 import java.util.*;
 
-public class WalkSubroutine implements Walk<Integer> {
+public class WalkSubroutine extends Walk<Integer> {
 
 
     private final TransitionMatrix<Integer> transitionMatrixIHat;
@@ -35,6 +34,7 @@ public class WalkSubroutine implements Walk<Integer> {
                           int wj,
                           int neighbourOfWj) {
 
+        super();
 
         this.aiStar = aiStar;
         this.biStar = biStar;
@@ -57,7 +57,7 @@ public class WalkSubroutine implements Walk<Integer> {
 
 
     @Override
-    public Walk<Integer> generate() {
+    public void generate() {
 
         State<Integer> pv = probabilitiesOfARandomWalk(aiStar, length, graphIHat, transitionMatrixIHat);
 
@@ -89,7 +89,7 @@ public class WalkSubroutine implements Walk<Integer> {
 
         while (true) {
 
-            Walk<Integer> wr = new RandomWalk(length, aiStar, graphIHat);
+            Walk<Integer> wr = null;//new RandomWalk(length, aiStar, graphIHat);
 
             Integer xr = wr.getEndpoint();
 
@@ -99,25 +99,10 @@ public class WalkSubroutine implements Walk<Integer> {
             double probability = (pHatXr * pMin) / (pxr * pHatMax);
 
             if (Math.random() < probability) {
-                return wr;
+                return;
             }
         }
 
-    }
-
-    @Override
-    public Walk<Integer> removeCycles() {
-        return null;
-    }
-
-    @Override
-    public List<Integer> getPath() {
-        return path;
-    }
-
-    @Override
-    public Integer getEndpoint() {
-        return path.getLast();
     }
 
 

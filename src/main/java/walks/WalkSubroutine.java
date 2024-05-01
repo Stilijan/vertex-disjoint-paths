@@ -57,7 +57,7 @@ public class WalkSubroutine extends Walk<Integer> {
 
 
     @Override
-    public void generate() {
+    public void generateWalk() {
 
         State<Integer> pv = probabilitiesOfARandomWalk(aiStar, length, graphIHat, transitionMatrixIHat);
 
@@ -91,7 +91,7 @@ public class WalkSubroutine extends Walk<Integer> {
 
             Walk<Integer> wr = null;//new RandomWalk(length, aiStar, graphIHat);
 
-            Integer xr = wr.getEndpoint();
+            Integer xr = wr.getEndVertex();
 
             double pxr = pv.getProbabilityToReachVertex(xr);
             double pHatXr = pvHat.getProbabilityToReachVertex(xr);

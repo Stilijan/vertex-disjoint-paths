@@ -7,7 +7,6 @@ import java.util.*;
 
 public abstract class Walk<V> {
 
-
     protected List<V> path;
     protected V startVertex;
     protected Graph<V, DefaultWeightedEdge> graph;
@@ -22,7 +21,12 @@ public abstract class Walk<V> {
     protected Walk() {}
 
 
-    public Walk<V> removeCycles() {
+    /**
+     * Removes possible cycles from the path.
+     *
+     * @return this walk with the removed cycles.
+     */
+    public Walk<V> withRemovedCycles() {
 
         Map<V, Integer> map = new HashMap<>();
 
@@ -40,7 +44,17 @@ public abstract class Walk<V> {
         }
 
         return this;
+    }
 
+    /**
+     * Reverses the path in a walk.
+     *
+     * @return this walk with the reversed path.
+     */
+    public Walk<V> reversed() {
+
+        this.path = this.path.reversed();
+        return this;
     }
 
     public List<V> getPath() {
@@ -51,16 +65,18 @@ public abstract class Walk<V> {
         this.path = path;
     }
 
-    public V getEndpoint() {
-
-        return path.getLast();
+    public V getEndVertex() {
+        return path != null ? path.getLast() : null;
     }
 
     public V getStartVertex() {
-        return startVertex;
+        return path != null ? path.getFirst() : startVertex;
     }
 
-    public abstract void generate();
+    /**
+     * An abstract method for generating the path of a walk.
+     */
+    public abstract void generateWalk();
 
     @Override
     public String toString() {

@@ -6,7 +6,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 
 public class ShortestPathWalk<V> extends Walk<V> {
 
-    private V endVertex;
+    private final V endVertex;
 
     public ShortestPathWalk(Graph<V, DefaultWeightedEdge> graph, V startVertex, V endVertex) {
 
@@ -17,7 +17,7 @@ public class ShortestPathWalk<V> extends Walk<V> {
 
 
     @Override
-    public void generate() {
+    public void generateWalk() {
 
         DijkstraShortestPath<V, DefaultWeightedEdge> dijkstra =
             new DijkstraShortestPath<>(graph);

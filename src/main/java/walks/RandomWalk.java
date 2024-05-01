@@ -14,7 +14,7 @@ import java.util.*;
  */
 public class RandomWalk<V> extends Walk<V> {
 
-    private int length;
+    private final int length;
 
 
     public RandomWalk(Graph<V, DefaultWeightedEdge> graph, V startVertex, int length) {
@@ -26,7 +26,7 @@ public class RandomWalk<V> extends Walk<V> {
 
 
     @Override
-    public void generate() {
+    public void generateWalk() {
 
 
         V currentVertex = startVertex;
@@ -50,8 +50,5 @@ public class RandomWalk<V> extends Walk<V> {
 
             path.add(currentVertex);
         }
-
     }
-
-
 }

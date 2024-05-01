@@ -32,6 +32,11 @@ public class VertexPairs<V>{
 
     public List<V> getOneVertexPair(int i) {
 
+        if (i >= this.getSize()) {
+
+            return List.of();
+        }
+
         return List.of(startVertices.get(i), endVertices.get(i));
     }
 

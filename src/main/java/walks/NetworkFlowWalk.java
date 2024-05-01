@@ -7,47 +7,53 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import java.util.Map;
 import java.util.Set;
 
-public class NetworkFlowWalk<V> extends Walk<V> {
+public class NetworkFlowWalk extends Walk<Integer> {
 
     private static Map<DefaultWeightedEdge, Double> flowMap = null;
-    private final V endVertex;
 
-    private final V networkSource;
+    public static void setFlowMap(Map<DefaultWeightedEdge, Double> flowMap) {
 
-    private final V networkSink;
-    public NetworkFlowWalk(Graph<V, DefaultWeightedEdge> graph,
-                           V startVertex,
-                           V endVertex,
-                           V networkSource,
-                           V networkSink) {
+        NetworkFlowWalk.flowMap = flowMap;
+    }
+
+    private final Integer networkSource;
+    private final Integer networkSink;
+
+
+    public NetworkFlowWalk(Graph<Integer, DefaultWeightedEdge> graph,
+                           Integer startVertex,
+                           Integer networkSource,
+                           Integer networkSink) {
 
         super(graph, startVertex);
-        this.endVertex = endVertex;
+
 
         this.networkSource = networkSource;
         this.networkSink = networkSink;
     }
 
 
-    public static void initFlowMap(Map<DefaultWeightedEdge, Double> flowMap) {
-
-        if (NetworkFlowWalk.flowMap == null) {
-            NetworkFlowWalk.flowMap = flowMap;
-        }
-    }
-
 
     @Override
-    public void generate() {
+    public void generateWalk() {
 
-        V currentVertex = startVertex;
+        Integer currentVertex = startVertex;
 
-        while (currentVertex != endVertex) {
+        while (!flowMap.containsKey(graph.getEdge(currentVertex, networkSink))) {
 
-            path.add(currentVertex);
-            Set<DefaultWeightedEdge> outgoingEdges = graph.outgoingEdgesOf(currentVertex);
+            // if current vertex = vertex_in, add to path and just go directly to vertex_out
+            if (currentVertex >= 0) {
+                path.add(currentVertex);
 
-            for (DefaultWeightedEdge edge : outgoingEdges) {
+                assert (flowMap.get(graph.getEdge(currentVertex, -currentVertex)).equals(1.0));
+
+                currentVertex = -currentVertex;
+                continue;
+            }
+
+            Set<DefaultWeightedEdge> outgoingEdgesOfCurrVertex = graph.outgoingEdgesOf(currentVertex);
+
+            for (DefaultWeightedEdge edge : outgoingEdgesOfCurrVertex) {
 
                 if ((graph.getEdgeTarget(edge).equals(networkSource) ||
                     graph.getEdgeTarget(edge).equals(networkSink))) {
@@ -60,14 +66,13 @@ public class NetworkFlowWalk<V> extends Walk<V> {
                 if (flow > 0.0) {
 
                     currentVertex =
-                        graph.getEdgeSource(edge) == currentVertex ? graph.getEdgeTarget(edge) : graph.getEdgeSource(edge);
+                        graph.getEdgeSource(edge).equals(currentVertex) ? graph.getEdgeTarget(edge) : graph.getEdgeSource(edge);
+
                     flowMap.put(edge, 0.0);
                     break;
                 }
 
             }
         }
-
-        path.add(endVertex);
     }
 }

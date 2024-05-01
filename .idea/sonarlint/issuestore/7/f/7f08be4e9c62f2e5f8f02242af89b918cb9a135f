@@ -1,19 +1,0 @@
-
-õ
-java:S1130"~Remove the declaration of thrown exception 'exceptions.GraphFileNotFoundException', as it cannot be thrown from method's body.(„–≥ 8º„¢∆Ó1
-ñ
-java:S1130"yRemove the declaration of thrown exception 'exceptions.GraphReadingException', as it cannot be thrown from method's body.(„–≥ 8Ω„¢∆Ó1
-]	java:S125"<This block of commented-out lines of code should be removed.(õ¯Œ‹˘ˇˇˇˇ8õ–„∏Ó1
-G	java:S1068"+Replace this use of System.out by a logger.(∫˛£ﬁ8Æ–„∏Ó1
-G	java:S106:"+Replace this use of System.out by a logger.(∏Àâ·8Ûàı≈Ó1
-L	java:S106<"+Replace this use of System.out by a logger.(Ô£œ„ˇˇˇˇˇ8¡„¢∆Ó1
-G	java:S106="+Replace this use of System.out by a logger.(±∂´Í8≥Ô§∆Ó1
-L	java:S106?"+Replace this use of System.out by a logger.(å¸ûÓˇˇˇˇˇ8ª‡ø∆Ó1
-i
-java:S1128"GRemove this unused import 'graphLoader.impl.SimpleDirectedGraphLoader'.(Ú Ã√˚ˇˇˇˇ8¡„¢∆Ó1
-O
-java:S1128"2Remove this unused import 'walks.impl.RandomWalk'.(µ≠·…8¡„¢∆Ó1
-M
-java:S1128"+Remove this unused import 'java.util.List'.(’Î±ƒ¯ˇˇˇˇ8¡„¢∆Ó1
-O
-java:S1128"-Remove this unused import 'java.util.Random'.(Ë¯…õ˘ˇˇˇˇ8¡„¢∆Ó1

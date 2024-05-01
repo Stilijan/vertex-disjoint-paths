@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface VertexDisjointPaths<V> {
 
-    List<Walk<V>> executeAlgorithm();
+    List<Walk<V>> getDisjointWalks();
 }

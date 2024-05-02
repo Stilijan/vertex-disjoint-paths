@@ -33,8 +33,6 @@ X
 (src/main/java/walks/NetworkFlowWalk.java,0\5\054d96c9fe07de84f94321f8fa2367dbc716cf85
 Y
 )src/main/java/walks/ShortestPathWalk.java,1\4\14db9f4c01259594041ab36f03054bd44fd5b3f3
-H
-inputs/grids/grid_5_5.gr,5\7\5781e2fb115d38261c21f1c5f15a2739f346e1cf
 :
 
 .gitignore,a\5\a5cc2925ca8258af241be7e5b0381edf30266302
@@ -44,5 +42,3 @@ S
 -.idea/sonarlint/securityhotspotstore/index.pb,8\8\88a9255124c95bdc913197c120a8d560edc59c8e
 K
 inputs/rands/rand_50_750.gr,8\b\8b8e638ed595c0005650a6c30b1f0088208b7e89
-G
-inputs/rands/rand_50.gr,7\e\7e7a6827eb2d8a464bd498c5e942bf0eb48b701f

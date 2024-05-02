@@ -36,7 +36,7 @@ public class Main {
 
         for (int i = 0; i < res.size(); i++) {
 
-            System.out.println("Walk " + i + ": " + res.get(i));
+            System.out.println("Walk " + (i + 1) + ": " + res.get(i));
         }
     }
 }

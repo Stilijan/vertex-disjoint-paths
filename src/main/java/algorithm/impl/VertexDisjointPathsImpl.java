@@ -65,7 +65,7 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths<Integer> {
         Set<Integer> allVertices = mainGraph.vertexSet();
         List<Integer> allStartEndVertices = pairs.getAllVertices();
 
-        Set<Integer> x1Vertices = partitionVerticesIntoX1(allVertices, 1.0 / 3.0);
+        Set<Integer> x1Vertices = partitionVerticesIntoX1(allVertices);
 
 
         Set<Integer> xVertices = new HashSet<>();
@@ -125,7 +125,6 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths<Integer> {
 
 
         // Create random walks
-
         List<List<Walk<Integer>>> walks2And4 = extractWalks2andWalks4(z1Vertices);
 
         List<Walk<Integer>> walks2 = walks2And4.get(0);
@@ -136,7 +135,7 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths<Integer> {
 
         //================| STEP 5 |===================
 
-        List<Walk<Integer>> walks3 = createShortestPaths(z2Vertices, walks2, walks4);
+        List<Walk<Integer>> walks3 = extractWalks3(z2Vertices);
 
         assert walks3.size() == numberPairs;
         
@@ -197,15 +196,14 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths<Integer> {
      * Chooses randomly vertices from {@code vertexSet} with the specified {@code probability}.
      *
      * @param vertexSet vertex set to be chosen from.
-     * @param probability probability of choosing a vertex.
      * @return set of vertices, namely X1, which is approximately 1/{@code probability} of the size of {@code vertexSet}.
      */
-    private Set<Integer> partitionVerticesIntoX1(Set<Integer> vertexSet, double probability) {
+    private Set<Integer> partitionVerticesIntoX1(Set<Integer> vertexSet) {
 
         Set<Integer> x1Vertices = new HashSet<>();
 
         vertexSet.forEach(v -> {
-            if (RANDOM_GENERATOR.nextDouble() <= probability) {
+            if (RANDOM_GENERATOR.nextDouble() <= 1.0 / 3.0) {
                 x1Vertices.add(v);
             }
         });
@@ -214,52 +212,71 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths<Integer> {
     }
 
 
-    private List<Walk<Integer>> createShortestPaths(Set<Integer> z2Vertices,
-                                                    List<Walk<Integer>> walks2,
-                                                    List<Walk<Integer>> walks4) {
+    /**
+     * Returns W<sub>i</sub><sup>(3)</sup> by creating the shortest paths between each pair (a<sub>i</sub><sup>*</sup>, b<sub>i</sub><sup>*</sup>).
+     * a<sub>i</sub><sup>*</sup>, b<sub>i</sub><sup>*</sup> are random neighbours in the graph with {@code z2Vertices}
+     * of a<sub>i</sub><sup>~</sup> and b<sub>i</sub><sup>~</sup>, respectively.
+     *
+     * @param z2Vertices the vertices in the graph, where the shortest path walk is generated.
+     * @return a list of shortest path walks.
+     */
+    private List<Walk<Integer>> extractWalks3(Set<Integer> z2Vertices) {
 
-
+        Set<Integer> yIVertices = new HashSet<>(z2Vertices);
         List<Walk<Integer>> walks3 = new ArrayList<>();
-
-
-        Set<Integer> tempYiVertices = z2Vertices;
 
         for (int i = 0; i < numberPairs; i++) {
 
+            Integer aiHat = aHatVertices.get(i);
+            Integer biHat = bHatVertices.get(i);
 
-            Graph<Integer, DefaultWeightedEdge>  graphYiHat = new AsSubgraph<>(mainGraph, tempYiVertices);
+            Walk<Integer> shortestPathWalk = generateShortestPathWalk(aiHat, biHat, yIVertices);
+            walks3.add(shortestPathWalk);
 
-            Integer aiHat = walks2.get(i).getEndVertex();
-
-            List<Integer> neighboursOfAiStar = Graphs.neighborListOf(mainGraph, aiHat);
-            List<Integer> neighboursOfAiStarInZ2 = neighboursOfAiStar
-                .stream()
-                .distinct()
-                .filter(z2Vertices::contains)
-                .toList();
-
-            Integer randomAiHat = neighboursOfAiStarInZ2.get(RANDOM_GENERATOR.nextInt(neighboursOfAiStarInZ2.size()));
-
-            Integer biHat = walks4.get(i).getStartVertex();
-
-            List<Integer> neighboursOfBiStar = Graphs.neighborListOf(mainGraph, biHat);
-            List<Integer> neighboursOfBiStarInZ2 = neighboursOfBiStar
-                .stream()
-                .distinct()
-                .filter(z2Vertices::contains)
-                .toList();
-
-            Integer randomBiHat = neighboursOfBiStarInZ2.get(RANDOM_GENERATOR.nextInt(neighboursOfAiStarInZ2.size()));
-
-            Walk<Integer> walk = new ShortestPathWalk<>(graphYiHat, randomAiHat, randomBiHat);
-            walk.generateWalk();
-
-            walks3.add(walk);
-            walk.getPath().forEach(tempYiVertices::remove);
+            shortestPathWalk.getPath().forEach(yIVertices::remove);
         }
 
         return walks3;
     }
+
+
+    /**
+     * Generates the shortest path between a<sub>i</sub><sup>*</sup> and b<sub>i</sub><sup>*</sup>, which are
+     * random neighbours of a<sub>i</sub><sup>^</sup> and b<sub>i</sub><sup>^</sup>, respectively.
+     *
+     * @param aiHat the end vertex of W<sub>i</sub><sup>(2)</sup>.
+     * @param biHat the end vertex of W<sub>i</sub><sup>(4)</sup>.
+     * @param yIVertices the vertices of the graph, where the shortest path is generated.
+     * @return the shortest path walk.
+     */
+    private Walk<Integer> generateShortestPathWalk(Integer aiHat, Integer biHat, Set<Integer> yIVertices) {
+
+        Graph<Integer, DefaultWeightedEdge>  graphYiHat = new AsSubgraph<>(mainGraph, yIVertices);
+
+        List<Integer> neighboursOfAiHat = Graphs.neighborListOf(mainGraph, aiHat);
+        List<Integer> neighboursOfAiHatInZ2 = neighboursOfAiHat
+            .stream()
+            .distinct()
+            .filter(yIVertices::contains)
+            .toList();
+
+        Integer aiStar = neighboursOfAiHatInZ2.get(RANDOM_GENERATOR.nextInt(neighboursOfAiHatInZ2.size()));
+
+        List<Integer> neighboursOfBiHat = Graphs.neighborListOf(mainGraph, biHat);
+        List<Integer> neighboursOfBiHatInZ2 = neighboursOfBiHat
+            .stream()
+            .distinct()
+            .filter(yIVertices::contains)
+            .toList();
+
+        Integer biStar = neighboursOfBiHatInZ2.get(RANDOM_GENERATOR.nextInt(neighboursOfBiHatInZ2.size()));
+
+        Walk<Integer> walk = new ShortestPathWalk<>(graphYiHat, aiStar, biStar);
+        walk.generateWalk();
+
+        return walk;
+    }
+
 
     /**
      * Generates a random walk in {@code graphJ}. The start vertex of this walk

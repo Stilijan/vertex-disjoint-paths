@@ -18,7 +18,10 @@ public abstract class Walk<V> {
         this.path = new ArrayList<>();
     }
 
-    protected Walk() {}
+    protected Walk() {
+
+        this.path = new ArrayList<>();
+    }
 
 
     /**

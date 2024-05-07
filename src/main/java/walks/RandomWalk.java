@@ -28,13 +28,18 @@ public class RandomWalk<V> extends Walk<V> {
     @Override
     public void generateWalk() {
 
+        LOGGER.debug("Generating a random walk beginning from {}", startVertex);
 
         V currentVertex = startVertex;
+        V previousVertex;
+
         path.add(currentVertex);
 
         double transitionProbability;
 
         for (int i = 0; i < length - 1; i++) {
+
+            previousVertex = currentVertex;
 
             transitionProbability = 1.0f / graph.degreeOf(currentVertex);
             List<V> neighbours = Graphs.neighborListOf(graph, currentVertex);
@@ -46,6 +51,10 @@ public class RandomWalk<V> extends Walk<V> {
                     currentVertex = neighbours.get(j);
                     break;
                 }
+            }
+
+            if (currentVertex == previousVertex) {
+                return;
             }
 
             path.add(currentVertex);

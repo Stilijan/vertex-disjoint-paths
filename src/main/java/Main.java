@@ -1,42 +1,53 @@
 import algorithm.VertexDisjointPaths;
 import algorithm.impl.VertexDisjointPathsImpl;
+import exceptions.AlgorithmInterruptedException;
 import exceptions.GraphReadingException;
-import graphLoader.GraphLoader;
-import graphLoader.impl.SimpleDirectedGraphLoader;
+import exceptions.InvalidAlgorithmResultException;
+import graphloader.GraphLoader;
+import graphloader.impl.SimpleUnirectedGraphLoader;
 import org.jgrapht.Graph;
-import org.jgrapht.alg.flow.EdmondsKarpMFImpl;
-import org.jgrapht.alg.flow.PushRelabelMFImpl;
 import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.SimpleWeightedGraph;
-import walks.Walk;
+import util.GraphFiles;
 
-import java.util.*;
+import java.util.List;
 
 public class Main {
 
+    public static void main(String[] args)  {
 
-    public static void main(String[] args) throws GraphReadingException {
-
-
-        String path = "./inputs/rands/rand_50_750.gr";
 
         GraphLoader<Integer, DefaultWeightedEdge> weightedGraphLoader =
-            new SimpleDirectedGraphLoader(path);
+            new SimpleUnirectedGraphLoader(GraphFiles.RAND_500);
 
-        Graph<Integer, DefaultWeightedEdge> graph = weightedGraphLoader.loadGraph();
+
+        Graph<Integer, DefaultWeightedEdge> graph;
+        try {
+            graph = weightedGraphLoader.loadGraph();
+        } catch (GraphReadingException e) {
+
+            return;
+        }
 
 
         List<Integer> startVertices = List.of(2, 5);
-        List<Integer> endVertices = List.of(22, 25);
+        List<Integer> endVertices = List.of(35, 3);
 
 
-        VertexDisjointPaths<Integer> disjointPaths = new VertexDisjointPathsImpl(graph, startVertices, endVertices);
+        VertexDisjointPaths disjointPaths = new VertexDisjointPathsImpl(graph, startVertices, endVertices);
 
-        List<Walk<Integer>> res = disjointPaths.getDisjointWalks();
+        try {
+            disjointPaths.getDisjointWalks();
+        } catch (AlgorithmInterruptedException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
 
-        for (int i = 0; i < res.size(); i++) {
+        disjointPaths.printDisjointWalks();
 
-            System.out.println("Walk " + (i + 1) + ": " + res.get(i));
+        try {
+            disjointPaths.verifyResult();
+        } catch (InvalidAlgorithmResultException e) {
+            System.out.println(e.getMessage());
         }
     }
 }

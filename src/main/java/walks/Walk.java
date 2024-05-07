@@ -1,11 +1,16 @@
 package walks;
 
+import exceptions.AlgorithmInterruptedException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import java.util.*;
 
 public abstract class Walk<V> {
+
+    protected static final Logger LOGGER = LogManager.getLogger(Walk.class);
 
     protected List<V> path;
     protected V startVertex;
@@ -33,8 +38,9 @@ public abstract class Walk<V> {
 
         Map<V, Integer> map = new HashMap<>();
 
-        for (int i = 0; i < path.size(); i++) {
+        int i = 0;
 
+        while (i != path.size()) {
             V currentVertex = path.get(i);
 
             if (!map.containsKey(currentVertex)) {
@@ -43,8 +49,15 @@ public abstract class Walk<V> {
             } else {
 
                 path.subList(path.indexOf(currentVertex), i).clear();
+                i = 0;
+                map = new HashMap<>();
+                continue;
             }
+
+            i++;
         }
+
+
 
         return this;
     }
@@ -79,7 +92,7 @@ public abstract class Walk<V> {
     /**
      * An abstract method for generating the path of a walk.
      */
-    public abstract void generateWalk();
+    public abstract void generateWalk() throws AlgorithmInterruptedException;
 
     @Override
     public String toString() {

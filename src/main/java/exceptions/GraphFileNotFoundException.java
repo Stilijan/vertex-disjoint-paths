@@ -2,8 +2,8 @@ package exceptions;
 
 public class GraphFileNotFoundException extends Exception{
 
-    public GraphFileNotFoundException(String message) {
+    public GraphFileNotFoundException(String msg) {
 
-        super(message);
+        super(msg);
     }
 }

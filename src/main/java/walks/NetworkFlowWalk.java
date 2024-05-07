@@ -37,6 +37,8 @@ public class NetworkFlowWalk extends Walk<Integer> {
     @Override
     public void generateWalk() {
 
+        LOGGER.debug("Generating a vertex disjoint path from {} to a random vertex in K", startVertex);
+
         Integer currentVertex = startVertex;
 
         while (!flowMap.containsKey(graph.getEdge(currentVertex, networkSink))) {

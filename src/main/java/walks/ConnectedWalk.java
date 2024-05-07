@@ -18,6 +18,8 @@ public class ConnectedWalk<V> extends Walk<V>{
     @Override
     public void generateWalk() {
 
+        LOGGER.trace("Connecting all parts of a walk");
+
         assert walks.size() == 5;
 
         for (Walk<V> walk : walks) {

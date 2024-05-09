@@ -10,7 +10,6 @@ import java.util.*;
 
 public abstract class Walk<V> {
 
-    protected static final Logger LOGGER = LogManager.getLogger(Walk.class);
 
     protected List<V> path;
     protected V startVertex;

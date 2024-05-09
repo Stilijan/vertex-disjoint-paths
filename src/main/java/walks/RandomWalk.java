@@ -1,5 +1,7 @@
 package walks;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -14,6 +16,7 @@ import java.util.*;
  */
 public class RandomWalk<V> extends Walk<V> {
 
+    private static final Logger LOGGER = LogManager.getLogger(RandomWalk.class);
     private final int length;
 
 
@@ -35,18 +38,16 @@ public class RandomWalk<V> extends Walk<V> {
 
         path.add(currentVertex);
 
-        double transitionProbability;
 
         for (int i = 0; i < length - 1; i++) {
 
             previousVertex = currentVertex;
 
-            transitionProbability = 1.0f / graph.degreeOf(currentVertex);
             List<V> neighbours = Graphs.neighborListOf(graph, currentVertex);
 
             for (int j = 0; j < neighbours.size(); j++) {
 
-                if (Math.random() <= transitionProbability || j == neighbours.size() - 1) {
+                if (Math.random() <= 1.0f / graph.degreeOf(currentVertex) || j == neighbours.size() - 1) {
 
                     currentVertex = neighbours.get(j);
                     break;

@@ -9,6 +9,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.builder.GraphTypeBuilder;
 
 import java.io.*;
+import java.util.stream.Stream;
 
 /**
  *  A component, which loads a simple directed graph (without self-loops and parallel arcs)
@@ -39,38 +40,28 @@ public class SimpleUnirectedGraphLoader implements GraphLoader<Integer, DefaultW
     @Override
     public Graph<Integer, DefaultWeightedEdge> loadGraph() throws GraphReadingException {
 
+        LOGGER.debug("Generating graph from {}", inputFilePath);
+
         Graph<Integer, DefaultWeightedEdge> outputGraph = buildEmptySimpleWeightedUndirectedGraph();
 
-        FileReader fileReader;
-        BufferedReader bufferedReader;
 
+        try(BufferedReader bufferedReader = new BufferedReader(new FileReader(inputFilePath))) {
 
-        try {
+            bufferedReader
+                .lines()
+                .filter(line -> line.startsWith("a"))
+                .map(line -> line.split("\\s"))
+                .forEach(lineSplit -> {
 
-            fileReader = new FileReader(inputFilePath);
+                    int sourceVertex = Integer.parseInt(lineSplit[1]);
+                    int targetVertex = Integer.parseInt(lineSplit[2]);
 
-            bufferedReader = new BufferedReader(fileReader);
+                    outputGraph.addVertex(sourceVertex);
+                    outputGraph.addVertex(targetVertex);
 
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-
-                if (!line.startsWith("a")) {
-                    continue;
-                }
-
-                String[] lineSplit = line.split(" ");
-                int sourceVertex = Integer.parseInt(lineSplit[1]);
-                int targetVertex = Integer.parseInt(lineSplit[2]);
-
-                outputGraph.addVertex(sourceVertex);
-                outputGraph.addVertex(targetVertex);
-
-                outputGraph.addEdge(sourceVertex, targetVertex);
-                outputGraph.setEdgeWeight(sourceVertex, targetVertex, 1.0);
-
-            }
-
-            bufferedReader.close();
+                    outputGraph.addEdge(sourceVertex, targetVertex);
+//                    outputGraph.setEdgeWeight(sourceVertex, targetVertex, 1.0);
+                });
 
         } catch (IOException e) {
 
@@ -79,6 +70,7 @@ public class SimpleUnirectedGraphLoader implements GraphLoader<Integer, DefaultW
         }
 
 
+        LOGGER.info("Graph with {} vertices and {} edges generated.", outputGraph.vertexSet().size(), outputGraph.edgeSet().size());
         return outputGraph;
     }
 }

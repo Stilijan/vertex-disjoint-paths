@@ -1,15 +1,13 @@
-import algorithm.VertexDisjointPaths;
-import algorithm.impl.VertexDisjointPathsImpl;
-import exceptions.AlgorithmInterruptedException;
 import exceptions.GraphReadingException;
-import exceptions.InvalidAlgorithmResultException;
+import executor.Executor;
+import executor.impl.VertexDisjointPathsExecutor;
 import graphloader.GraphLoader;
 import graphloader.impl.SimpleUnirectedGraphLoader;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultWeightedEdge;
+import pairloader.PairLoader;
+import pairloader.impl.PairLoaderImpl;
 import util.GraphFiles;
-
-import java.util.List;
 
 public class Main {
 
@@ -17,37 +15,28 @@ public class Main {
 
 
         GraphLoader<Integer, DefaultWeightedEdge> weightedGraphLoader =
-            new SimpleUnirectedGraphLoader(GraphFiles.RAND_500);
-
+            new SimpleUnirectedGraphLoader(GraphFiles.RAND_300000);
 
         Graph<Integer, DefaultWeightedEdge> graph;
+
         try {
             graph = weightedGraphLoader.loadGraph();
         } catch (GraphReadingException e) {
 
-            return;
+            throw new RuntimeException(e.getMessage());
         }
 
+        double alpha = 1.0 / 2.0;
+        double beta = 1.0 / 2.0;
 
-        List<Integer> startVertices = List.of(2, 5);
-        List<Integer> endVertices = List.of(35, 3);
+        PairLoader<Integer> pairLoader = new PairLoaderImpl(graph, alpha, beta);
+        pairLoader.generatePairs(10);
+        pairLoader.printPairs();
 
 
-        VertexDisjointPaths disjointPaths = new VertexDisjointPathsImpl(graph, startVertices, endVertices);
 
-        try {
-            disjointPaths.getDisjointWalks();
-        } catch (AlgorithmInterruptedException e) {
-            System.out.println(e.getMessage());
-            return;
-        }
+        Executor vdpExecutor = new VertexDisjointPathsExecutor(graph, pairLoader.getPairs());
+        vdpExecutor.executeAlgorithm();
 
-        disjointPaths.printDisjointWalks();
-
-        try {
-            disjointPaths.verifyResult();
-        } catch (InvalidAlgorithmResultException e) {
-            System.out.println(e.getMessage());
-        }
     }
 }

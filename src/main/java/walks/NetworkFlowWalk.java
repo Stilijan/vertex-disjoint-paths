@@ -1,6 +1,8 @@
 package walks;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
@@ -10,6 +12,8 @@ import java.util.Set;
 public class NetworkFlowWalk extends Walk<Integer> {
 
     private static Map<DefaultWeightedEdge, Double> flowMap = null;
+    private static final Logger LOGGER = LogManager.getLogger(NetworkFlowWalk.class);
+
 
     public static void setFlowMap(Map<DefaultWeightedEdge, Double> flowMap) {
 

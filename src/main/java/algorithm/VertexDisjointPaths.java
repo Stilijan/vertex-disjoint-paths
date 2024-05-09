@@ -6,9 +6,10 @@ import exceptions.InvalidAlgorithmResultException;
 public interface VertexDisjointPaths {
 
     /**
-     * Returns the disjoint walks for each pair of start/end vertices.
+     * Searches for disjoint paths for each pair of start/end vertices.
+     * @return true, if the algorithm finds disjoint paths.
      */
-    void getDisjointWalks() throws AlgorithmInterruptedException;
+    boolean findDisjointWalks();
 
     /**
      * Verifies, that the result has unique vertices

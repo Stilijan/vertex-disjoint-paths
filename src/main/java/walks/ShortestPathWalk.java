@@ -1,12 +1,16 @@
 package walks;
 
 import exceptions.AlgorithmInterruptedException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jgrapht.Graph;
+import org.jgrapht.alg.shortestpath.BidirectionalDijkstraShortestPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 public class ShortestPathWalk<V> extends Walk<V> {
 
+    private static final Logger LOGGER = LogManager.getLogger(ShortestPathWalk.class);
     private final V endVertex;
 
     public ShortestPathWalk(Graph<V, DefaultWeightedEdge> graph, V startVertex, V endVertex) {
@@ -23,8 +27,8 @@ public class ShortestPathWalk<V> extends Walk<V> {
         LOGGER.debug("Generating the shortest path between {} and {}", startVertex, endVertex);
 
 
-        DijkstraShortestPath<V, DefaultWeightedEdge> dijkstra =
-            new DijkstraShortestPath<>(graph);
+        BidirectionalDijkstraShortestPath<V, DefaultWeightedEdge> dijkstra =
+            new BidirectionalDijkstraShortestPath<>(graph);
 
         try {
             this.path = dijkstra

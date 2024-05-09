@@ -1,9 +1,14 @@
 package walks;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.List;
 
 public class ConnectedWalk<V> extends Walk<V>{
+
+    private static final Logger LOGGER = LogManager.getLogger(ConnectedWalk.class);
 
     private final List<Walk<V>> walks;
 

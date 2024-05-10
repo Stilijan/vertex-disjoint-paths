@@ -12,10 +12,10 @@ import org.jgrapht.Graph;
 public interface GraphLoader<V,E> {
 
     /**
-     * A method, which creates the graph instance by a given .gr file.
+     * Returns a newly created graph instance.
      *
      * @return the created graph instance
      * @throws GraphReadingException if there is an error while reading the input file
      */
-    Graph<V, E> loadGraph() throws  GraphReadingException;
+    Graph<V, E> loadGraph() throws GraphReadingException;
 }

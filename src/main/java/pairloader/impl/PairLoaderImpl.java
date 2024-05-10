@@ -3,6 +3,8 @@ package pairloader.impl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jgrapht.Graph;
+import org.jgrapht.Graphs;
+import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import pairloader.PairLoader;
 import util.VertexPairs;
@@ -13,31 +15,29 @@ public class PairLoaderImpl implements PairLoader<Integer> {
 
     private static final Random RANDOM = new Random();
     private static final Logger LOGGER = LogManager.getLogger(PairLoaderImpl.class);
+
     private final Graph<Integer, DefaultWeightedEdge> graph;
     private final double maxNumberPairs;
-
-    private List<Integer> startVertices;
-    private List<Integer> endVertices;
+    private final VertexPairs<Integer> vertexPairs;
     private boolean generated;
-    private final double beta;
 
-    public PairLoaderImpl(Graph<Integer, DefaultWeightedEdge> graph, double alpha, double beta) {
+    public PairLoaderImpl(Graph<Integer, DefaultWeightedEdge> graph, double alpha) {
 
         this.graph = graph;
         this.generated = false;
-        this.beta = beta;
 
         int n = graph.vertexSet().size();
         int m = graph.edgeSet().size();
         double d = (double) (2 * m) / n;
 
         this.maxNumberPairs = alpha * n * Math.log(d) / Math.log(n);
+        this.vertexPairs = new VertexPairs<>();
     }
 
     @Override
-    public void generatePairs(int numberOfPairs) {
+    public void generatePairs(int numberPairs) {
 
-        LOGGER.debug("Generating {} pairs of start and end vertices", numberOfPairs);
+        LOGGER.debug("Generating {} pairs of start and end vertices", numberPairs);
 
         if (generated) {
 
@@ -45,53 +45,43 @@ public class PairLoaderImpl implements PairLoader<Integer> {
             return;
         }
 
-        if (numberOfPairs >= maxNumberPairs) {
+        if (numberPairs >= maxNumberPairs) {
 
             LOGGER.error("number of pairs must not exceed {}", maxNumberPairs);
             return;
         }
 
         int n = graph.vertexSet().size();
+        int endpointsCapacity = 2 * numberPairs;
 
-        Set<Integer> startVertexSet = new LinkedHashSet<>();
-        Set<Integer> endVertexSet = new LinkedHashSet<>();
+        Set<Integer> chosenEndpointsSet = HashSet.newHashSet(endpointsCapacity);
 
-        while (startVertexSet.size() != numberOfPairs) {
+        while (vertexPairs.getSize() != numberPairs) {
 
             int randomStartVertex = RANDOM.nextInt(n) + 1;
             int randomEndVertex = RANDOM.nextInt(n) + 1;
 
             boolean disjointVertices = !(randomStartVertex == randomEndVertex ||
-                endVertexSet.contains(randomStartVertex) ||
-                startVertexSet.contains(randomEndVertex) ||
-                startVertexSet.contains(randomStartVertex) ||
-                endVertexSet.contains(randomEndVertex));
+                chosenEndpointsSet.contains(randomStartVertex) ||
+                chosenEndpointsSet.contains(randomEndVertex));
 
             if (!disjointVertices) {
 
                 continue;
             }
 
-            startVertexSet.add(randomStartVertex);
-            endVertexSet.add(randomEndVertex);
+            vertexPairs.addOneVertexPair(randomStartVertex, randomEndVertex);
+
+            chosenEndpointsSet.add(randomStartVertex);
+            chosenEndpointsSet.add(randomEndVertex);
         }
 
-        this.startVertices = new ArrayList<>(startVertexSet);
-        this.endVertices = new ArrayList<>(endVertexSet);
 
-        this.generated = true;
         LOGGER.info("Pairs generated");
+        this.generated = true;
     }
 
-    @Override
-    public List<Integer> getStartVertices() {
-        return generated ? startVertices : null;
-    }
 
-    @Override
-    public List<Integer> getEndVertices() {
-        return generated ? endVertices : null;
-    }
 
     @Override
     public void printPairs() {
@@ -100,18 +90,20 @@ public class PairLoaderImpl implements PairLoader<Integer> {
 
         if (!generated) {
 
-            LOGGER.error("Pairs already generated.");
+            LOGGER.error("Pairs not generated yet.");
             return;
         }
 
-        for (int i = 0; i < startVertices.size(); i++) {
 
-            LOGGER.info("Pair {}: ({}, {})", i + 1, startVertices.get(i), endVertices.get(i));
+        for (int i = 0; i < vertexPairs.getSize(); i++) {
+
+            LOGGER.info("Pair {}: ({}, {})", i + 1, vertexPairs.getStartVertices().get(i), vertexPairs.getEndVertices().get(i));
         }
     }
 
     @Override
     public VertexPairs<Integer> getPairs() {
-        return new VertexPairs<>(startVertices, endVertices);
+        return vertexPairs;
     }
+
 }

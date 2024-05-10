@@ -1,8 +1,6 @@
 package walks;
 
 import exceptions.AlgorithmInterruptedException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
@@ -74,10 +72,6 @@ public abstract class Walk<V> {
 
     public List<V> getPath() {
         return path;
-    }
-
-    public void setPath(List<V> path) {
-        this.path = path;
     }
 
     public V getEndVertex() {

@@ -18,5 +18,8 @@ public interface VertexDisjointPaths {
     void verifyResult() throws InvalidAlgorithmResultException;
 
 
+    /**
+     * Outputs the disjoint paths.
+     */
     void printDisjointWalks();
 }

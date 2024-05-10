@@ -9,6 +9,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.builder.GraphTypeBuilder;
 
 import java.io.*;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -45,7 +46,7 @@ public class SimpleUnirectedGraphLoader implements GraphLoader<Integer, DefaultW
         Graph<Integer, DefaultWeightedEdge> outputGraph = buildEmptySimpleWeightedUndirectedGraph();
 
 
-        try(BufferedReader bufferedReader = new BufferedReader(new FileReader(inputFilePath))) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputFilePath))) {
 
             bufferedReader
                 .lines()
@@ -60,7 +61,7 @@ public class SimpleUnirectedGraphLoader implements GraphLoader<Integer, DefaultW
                     outputGraph.addVertex(targetVertex);
 
                     outputGraph.addEdge(sourceVertex, targetVertex);
-//                    outputGraph.setEdgeWeight(sourceVertex, targetVertex, 1.0);
+                    outputGraph.setEdgeWeight(sourceVertex, targetVertex, 1.0);
                 });
 
         } catch (IOException e) {

@@ -8,7 +8,7 @@ function calculate_m() {
     echo ${m_float%.*}  # Round down to the nearest integer
 }
 
-# Main function to generate random graphs
+# main.Main function to generate random graphs
 function generate_graphs() {
 
     rm -rf rand_*.gr
@@ -26,12 +26,12 @@ function generate_graphs() {
         
         echo "Generating a random graph with n=$n, m=$m, and seed=$seed"
 
-        ./sprand.exe $n $m 1 1 $seed > "./inputs/rands/$output_file"
+        ./gens/sprand.exe $n $m 1 1 $seed > "./inputs/rands/$output_file"
     done
 }
 
 # Check if sprand executable exists
-if [ ! -x "./sprand.exe" ]; then
+if [ ! -x "./gens/sprand.exe" ]; then
     echo "Error: The 'sprand.exe' executable does not exist or is not executable."
     exit 1
 fi

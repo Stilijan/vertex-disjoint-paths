@@ -7,7 +7,7 @@ import exceptions.InvalidAlgorithmResultException;
 import exceptions.MaximumNumberOfPairsExceeded;
 import executor.Executor;
 import graphloader.GraphLoader;
-import graphloader.impl.SimpleUnirectedGraphLoader;
+import graphloader.impl.SimpleUndirectedGraphLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jgrapht.Graph;
@@ -42,7 +42,7 @@ public class VertexDisjointPathsExecutor implements Executor {
     public void executeAlgorithm() {
 
         GraphLoader<Integer, DefaultWeightedEdge> weightedGraphLoader =
-            new SimpleUnirectedGraphLoader(graphInputPath);
+            new SimpleUndirectedGraphLoader(graphInputPath);
 
         Graph<Integer, DefaultWeightedEdge> graph;
 

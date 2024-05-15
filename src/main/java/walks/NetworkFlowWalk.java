@@ -78,5 +78,7 @@ public class NetworkFlowWalk extends Walk<Integer> {
 
             }
         }
+
+        LOGGER.debug("Generated a vertex disjoint path from {} to {}", startVertex, path.getLast());
     }
 }

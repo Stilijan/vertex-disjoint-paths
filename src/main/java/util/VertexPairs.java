@@ -62,4 +62,17 @@ public class VertexPairs<V>{
 
         return this.startVertices.size();
     }
+
+    @Override
+    public String toString() {
+
+        StringBuilder res = new StringBuilder();
+
+        for (int i = 0; i < startVertices.size(); i++) {
+
+            res.append("Pair %s: (%s, %s)%n".formatted(i + 1, startVertices.get(i), endVertices.get(i)));
+        }
+
+        return res.toString();
+    }
 }

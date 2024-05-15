@@ -7,8 +7,7 @@ import util.GraphFiles;
 public class Main {
     public static void main(String[] args)  {
 
-
-        Executor vdpExecutor = new VertexDisjointPathsExecutor(GraphFiles.RAND_300000, 250);
+        Executor vdpExecutor = new VertexDisjointPathsExecutor(GraphFiles.RAND_50000, 20);
         vdpExecutor.executeAlgorithm();
     }
 }

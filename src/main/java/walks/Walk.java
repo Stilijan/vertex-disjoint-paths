@@ -4,7 +4,10 @@ import exceptions.AlgorithmInterruptedException;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Walk<V> {
 
@@ -53,7 +56,6 @@ public abstract class Walk<V> {
 
             i++;
         }
-
 
 
         return this;

@@ -31,7 +31,6 @@ public class NetworkFlowWalk extends Walk<Integer> {
 
         super(graph, startVertex);
 
-
         this.networkSource = networkSource;
         this.networkSink = networkSink;
     }
@@ -57,19 +56,18 @@ public class NetworkFlowWalk extends Walk<Integer> {
                 continue;
             }
 
+
             Set<DefaultWeightedEdge> outgoingEdgesOfCurrVertex = graph.outgoingEdgesOf(currentVertex);
 
             for (DefaultWeightedEdge edge : outgoingEdgesOfCurrVertex) {
 
-                if ((graph.getEdgeTarget(edge).equals(networkSource) ||
-                    graph.getEdgeTarget(edge).equals(networkSink))) {
+                double flow = flowMap.get(edge);
 
-                    continue;
-                }
+                boolean isNotSourceOrSink = !(graph.getEdgeTarget(edge).equals(networkSource) ||
+                    graph.getEdgeTarget(edge).equals(networkSink));
+                boolean isExistentFlow = flow > 0.0;
 
-                Double flow = flowMap.get(edge);
-
-                if (flow > 0.0) {
+                if (isNotSourceOrSink && isExistentFlow) {
 
                     currentVertex =
                         graph.getEdgeSource(edge).equals(currentVertex) ? graph.getEdgeTarget(edge) : graph.getEdgeSource(edge);

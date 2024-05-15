@@ -8,9 +8,9 @@ import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.builder.GraphTypeBuilder;
 
-import java.io.*;
-import java.util.List;
-import java.util.stream.Stream;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  *  A component, which loads a simple directed graph (without self-loops and parallel arcs)

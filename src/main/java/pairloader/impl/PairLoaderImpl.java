@@ -3,8 +3,6 @@ package pairloader.impl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jgrapht.Graph;
-import org.jgrapht.Graphs;
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import pairloader.PairLoader;
 import util.VertexPairs;
@@ -20,11 +18,14 @@ public class PairLoaderImpl implements PairLoader<Integer> {
     private final double maxNumberPairs;
     private final VertexPairs<Integer> vertexPairs;
     private boolean generated;
+    private int numberPairs;
 
-    public PairLoaderImpl(Graph<Integer, DefaultWeightedEdge> graph, double alpha) {
+    public PairLoaderImpl(Graph<Integer, DefaultWeightedEdge> graph, double alpha, int numberPairs) {
 
         this.graph = graph;
         this.generated = false;
+
+        this.numberPairs = numberPairs;
 
         int n = graph.vertexSet().size();
         int m = graph.edgeSet().size();
@@ -35,7 +36,7 @@ public class PairLoaderImpl implements PairLoader<Integer> {
     }
 
     @Override
-    public void generatePairs(int numberPairs) {
+    public void generatePairs() {
 
         LOGGER.debug("Generating {} pairs of start and end vertices", numberPairs);
 

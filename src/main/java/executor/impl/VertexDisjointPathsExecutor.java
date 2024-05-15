@@ -2,7 +2,6 @@ package executor.impl;
 
 import algorithm.VertexDisjointPaths;
 import algorithm.impl.VertexDisjointPathsImpl;
-import exceptions.AlgorithmInterruptedException;
 import exceptions.GraphReadingException;
 import exceptions.InvalidAlgorithmResultException;
 import executor.Executor;
@@ -14,8 +13,6 @@ import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import pairloader.PairLoader;
 import pairloader.impl.PairLoaderImpl;
-import util.GraphFiles;
-import util.VertexPairs;
 
 public class VertexDisjointPathsExecutor implements Executor {
 
@@ -25,6 +22,13 @@ public class VertexDisjointPathsExecutor implements Executor {
     private final int numberEndpointPairs;
 
 
+    /**
+     * Initializes a vertex-disjoint-path executor by a given graph file
+     * and k random endpoint vertices.
+     *
+     * @param graphInputPath path to the graph file
+     * @param numberEndpointPairs number of random endpoints
+     */
     public VertexDisjointPathsExecutor(String graphInputPath, int numberEndpointPairs) {
 
         this.tries = 1;
@@ -35,7 +39,6 @@ public class VertexDisjointPathsExecutor implements Executor {
 
     @Override
     public void executeAlgorithm() {
-
 
         GraphLoader<Integer, DefaultWeightedEdge> weightedGraphLoader =
             new SimpleUnirectedGraphLoader(graphInputPath);
@@ -52,10 +55,9 @@ public class VertexDisjointPathsExecutor implements Executor {
 
         double alpha = 1.0 / 4.0;
 
-        PairLoader<Integer> pairLoader = new PairLoaderImpl(graph, alpha);
-        pairLoader.generatePairs(numberEndpointPairs);
+        PairLoader<Integer> pairLoader = new PairLoaderImpl(graph, alpha, numberEndpointPairs);
+        pairLoader.generatePairs();
         pairLoader.printPairs();
-
 
 
         VertexDisjointPaths vertexDisjointPaths = null;

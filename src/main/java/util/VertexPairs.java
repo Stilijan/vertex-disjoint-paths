@@ -13,31 +13,11 @@ public class VertexPairs<V>{
         this.endVertices = new ArrayList<>();
     }
 
-    /**
-     * Initialize with concrete lists of vertices
-     *
-     * @param startVertices a list of vertices Ai (1 <= i <= n).
-     * @param endVertices a list of vertices Bi (1 <= i <= n) and (Ai, Bi) is a vertex pair.
-     */
-    public VertexPairs(List<V> startVertices, List<V> endVertices) {
-        this.startVertices = startVertices;
-        this.endVertices = endVertices;
-    }
 
     public void addOneVertexPair(V startVertex, V endVertex) {
 
         this.startVertices.add(startVertex);
         this.endVertices.add(endVertex);
-    }
-
-    public List<V> getOneVertexPair(int i) {
-
-        if (i >= this.getSize()) {
-
-            return List.of();
-        }
-
-        return List.of(startVertices.get(i), endVertices.get(i));
     }
 
     public List<V> getAllVertices() {

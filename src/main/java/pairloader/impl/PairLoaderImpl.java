@@ -18,7 +18,7 @@ public class PairLoaderImpl implements PairLoader<Integer> {
     private final double maxNumberPairs;
     private final VertexPairs<Integer> vertexPairs;
     private boolean generated;
-    private int numberPairs;
+    private final int numberPairs;
 
     public PairLoaderImpl(Graph<Integer, DefaultWeightedEdge> graph, double alpha, int numberPairs) {
 

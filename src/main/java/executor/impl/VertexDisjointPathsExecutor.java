@@ -4,6 +4,7 @@ import algorithm.VertexDisjointPaths;
 import algorithm.impl.VertexDisjointPathsImpl;
 import exceptions.GraphReadingException;
 import exceptions.InvalidAlgorithmResultException;
+import exceptions.MaximumNumberOfPairsExceeded;
 import executor.Executor;
 import graphloader.GraphLoader;
 import graphloader.impl.SimpleUnirectedGraphLoader;
@@ -49,14 +50,21 @@ public class VertexDisjointPathsExecutor implements Executor {
             graph = weightedGraphLoader.loadGraph();
         } catch (GraphReadingException e) {
 
-            LOGGER.error("Error while loading the graph");
+            LOGGER.error(e.getMessage());
             return;
         }
 
-        double alpha = 1.0 / 4.0;
+        double alpha = 1.0 / 10.0;
 
         PairLoader<Integer> pairLoader = new PairLoaderImpl(graph, alpha, numberEndpointPairs);
-        pairLoader.generatePairs();
+
+        try {
+            pairLoader.generatePairs();
+        } catch (MaximumNumberOfPairsExceeded e) {
+            LOGGER.error(e.getMessage());
+            return;
+        }
+
         pairLoader.printPairs();
 
 
@@ -75,7 +83,7 @@ public class VertexDisjointPathsExecutor implements Executor {
         try {
             vertexDisjointPaths.verifyResult();
         } catch (InvalidAlgorithmResultException e) {
-            LOGGER.error("Invalid result");
+            LOGGER.error(e.getMessage());
         }
     }
 }

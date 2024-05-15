@@ -4,6 +4,7 @@ package walks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jgrapht.Graph;
+import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import java.util.Map;
@@ -69,8 +70,7 @@ public class NetworkFlowWalk extends Walk<Integer> {
 
                 if (isNotSourceOrSink && isExistentFlow) {
 
-                    currentVertex =
-                        graph.getEdgeSource(edge).equals(currentVertex) ? graph.getEdgeTarget(edge) : graph.getEdgeSource(edge);
+                    currentVertex = Graphs.getOppositeVertex(graph, edge, currentVertex);
 
                     flowMap.put(edge, 0.0);
                     break;

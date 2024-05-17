@@ -4,7 +4,8 @@ import algorithm.VertexDisjointPaths;
 import algorithm.impl.VertexDisjointPathsImpl;
 import exceptions.GraphReadingException;
 import exceptions.InvalidAlgorithmResultException;
-import exceptions.MaximumNumberOfPairsExceeded;
+import exceptions.MaximumNumberOfPairsExceededException;
+import exceptions.ExecutionInterruptedException;
 import executor.Executor;
 import graphloader.GraphLoader;
 import graphloader.impl.SimpleUndirectedGraphLoader;
@@ -39,7 +40,7 @@ public class VertexDisjointPathsExecutor implements Executor {
 
 
     @Override
-    public void executeAlgorithm() {
+    public void executeAlgorithm() throws ExecutionInterruptedException {
 
         GraphLoader<Integer, DefaultWeightedEdge> weightedGraphLoader =
             new SimpleUndirectedGraphLoader(graphInputPath);
@@ -50,8 +51,8 @@ public class VertexDisjointPathsExecutor implements Executor {
             graph = weightedGraphLoader.loadGraph();
         } catch (GraphReadingException e) {
 
-            LOGGER.error(e.getMessage());
-            return;
+            LOGGER.fatal(e.getMessage());
+            throw new ExecutionInterruptedException(e.getMessage());
         }
 
         double alpha = 1.0 / 10.0;
@@ -60,9 +61,10 @@ public class VertexDisjointPathsExecutor implements Executor {
 
         try {
             pairLoader.generatePairs();
-        } catch (MaximumNumberOfPairsExceeded e) {
+        } catch (MaximumNumberOfPairsExceededException e) {
+
             LOGGER.error(e.getMessage());
-            return;
+            throw new ExecutionInterruptedException(e.getMessage());
         }
 
         pairLoader.printPairs();
@@ -72,18 +74,20 @@ public class VertexDisjointPathsExecutor implements Executor {
         boolean success = false;
 
         while (!success) {
-            LOGGER.debug("Executing vertex-disjoint-paths - trial {}", tries++);
 
+            LOGGER.debug("Executing vertex-disjoint-paths - trial {}", tries++);
             vertexDisjointPaths = new VertexDisjointPathsImpl(graph, pairLoader.getPairs());
             success = vertexDisjointPaths.findDisjointWalks();
         }
 
-        vertexDisjointPaths.printDisjointWalks();
+        vertexDisjointPaths.printDisjointPaths();
 
         try {
             vertexDisjointPaths.verifyResult();
         } catch (InvalidAlgorithmResultException e) {
+
             LOGGER.error(e.getMessage());
+            throw new ExecutionInterruptedException(e.getMessage());
         }
     }
 }

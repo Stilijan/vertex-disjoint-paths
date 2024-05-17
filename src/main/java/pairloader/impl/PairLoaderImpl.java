@@ -1,6 +1,6 @@
 package pairloader.impl;
 
-import exceptions.MaximumNumberOfPairsExceeded;
+import exceptions.MaximumNumberOfPairsExceededException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jgrapht.Graph;
@@ -37,7 +37,7 @@ public class PairLoaderImpl implements PairLoader<Integer> {
     }
 
     @Override
-    public void generatePairs() throws MaximumNumberOfPairsExceeded{
+    public void generatePairs() throws MaximumNumberOfPairsExceededException {
 
         LOGGER.debug("Generating {} pairs of start and end vertices", numberPairs);
 
@@ -50,7 +50,7 @@ public class PairLoaderImpl implements PairLoader<Integer> {
         if (numberPairs >= maxNumberPairs) {
 
             LOGGER.error("number of pairs must not exceed {}", maxNumberPairs);
-            throw new MaximumNumberOfPairsExceeded("number of pairs must not exceed " + maxNumberPairs);
+            throw new MaximumNumberOfPairsExceededException("number of pairs must not exceed " + maxNumberPairs);
         }
 
         int n = graph.vertexSet().size();

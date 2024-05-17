@@ -1,6 +1,6 @@
 package algorithm;
 
-import exceptions.AlgorithmInterruptedException;
+
 import exceptions.InvalidAlgorithmResultException;
 
 public interface VertexDisjointPaths {
@@ -14,12 +14,13 @@ public interface VertexDisjointPaths {
     /**
      * Verifies, that the result has unique vertices
      * and the edges within each path exist.
+     * @throws InvalidAlgorithmResultException if the output of the algorithm is invalid.
      */
     void verifyResult() throws InvalidAlgorithmResultException;
 
 
     /**
-     * Outputs the disjoint paths.
+     * Prints the disjoint paths.
      */
-    void printDisjointWalks();
+    void printDisjointPaths();
 }

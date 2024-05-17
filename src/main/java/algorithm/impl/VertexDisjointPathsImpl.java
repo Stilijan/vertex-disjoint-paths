@@ -21,7 +21,14 @@ import walks.NetworkFlowWalk;
 import walks.RandomWalk;
 import walks.ShortestPathWalk;
 
-import java.util.*;
+import java.util.Random;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.Map;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 
@@ -120,11 +127,12 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
 
         //================| STEP 4 |===================
 
-        // partition Y in Z1 and Z2
+        // Put all vertices, which are not in X, in Y
         Set<Integer> yVertices = mainGraph.vertexSet().stream()
             .filter(v -> !xVertices.contains(v))
             .collect(Collectors.toSet());
 
+        // Partition randomly Y in Z1 and Z2
         Map<Boolean, List<Integer>> zVerticesMap = yVertices.stream()
             .collect(Collectors.partitioningBy(v -> RANDOM.nextDouble() <= 1.0 / 2.0));
 
@@ -132,7 +140,7 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
         Set<Integer> z2Vertices = new HashSet<>(zVerticesMap.get(false));
 
 
-        // Create random walks
+        // Generate random walks
         List<Walk<Integer>> walks2;
         List<Walk<Integer>> walks4;
         Graph<Integer, DefaultWeightedEdge> graphJ = new AsSubgraph<>(mainGraph, z1Vertices);
@@ -216,7 +224,6 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
                     String message =
                         "Edge %d - %d in walk %d doesn't exist".formatted(prevVertex, currentVertex, i + 1);
 
-                    LOGGER.error(message);
                     throw new InvalidAlgorithmResultException(message);
                 }
 
@@ -227,7 +234,6 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
                         "Vertex %d in walk %d is contained also in walk %d."
                             .formatted(currentVertex, i + 1, disjointVerticesMap.get(currentVertex) + 1);
 
-                    LOGGER.error(message);
                     throw new InvalidAlgorithmResultException(message);
                 }
 
@@ -239,13 +245,13 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
     }
 
     @Override
-    public void printDisjointWalks() {
+    public void printDisjointPaths() {
 
-        LOGGER.trace("Printing result.");
+        LOGGER.trace("Printing paths.");
 
         for (int i = 0; i < result.size(); i++) {
 
-            LOGGER.info("Walk {}: {} ", (i + 1), result.get(i));
+            LOGGER.info("Path {}: {} ", (i + 1), result.get(i));
         }
     }
 
@@ -355,6 +361,7 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
         // generate the walk
         Walk<Integer> randomWalk = new RandomWalk<>(graphJ, startVertex, lengthRandomWalk);
         randomWalk.generateWalk();
+
 
 
         return randomWalk;
@@ -515,7 +522,6 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
 
             walk.generateWalk();
             walks5.add(walk.reversed());
-
 
             bTildeVertices.add(walk.getStartVertex());
         }

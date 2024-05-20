@@ -69,7 +69,6 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
         int numberVertices = mainGraph.vertexSet().size();
         this.numberPairs = pairs.getSize();
 
-
         double d = ((double) (2 * numberEdges)) / numberVertices;
         this.lengthRandomWalk =
             (int) Math.ceil(4.0 * Math.log(numberVertices) / Math.log(d));
@@ -133,11 +132,12 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
             .collect(Collectors.toSet());
 
         // Partition randomly Y in Z1 and Z2
-        Map<Boolean, List<Integer>> zVerticesMap = yVertices.stream()
-            .collect(Collectors.partitioningBy(v -> RANDOM.nextDouble() <= 1.0 / 2.0));
+        Map<Boolean, Set<Integer>> zVerticesMap = yVertices.stream()
+            .collect(Collectors.partitioningBy(v -> RANDOM.nextDouble() <= 1.0 / 2.0, Collectors.toSet()));
 
-        Set<Integer> z1Vertices = new HashSet<>(zVerticesMap.get(true));
-        Set<Integer> z2Vertices = new HashSet<>(zVerticesMap.get(false));
+
+        Set<Integer> z1Vertices = zVerticesMap.get(true);
+        Set<Integer> z2Vertices = zVerticesMap.get(false);
 
 
         // Generate random walks
@@ -318,7 +318,7 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
     private Walk<Integer> generateShortestPathWalk(int aiHat,
                                                    int biHat,
                                                    Graph<Integer, DefaultWeightedEdge> graphYiHat)
-        throws AlgorithmInterruptedException{
+        throws AlgorithmInterruptedException {
 
         LOGGER.debug("Generating the shortest path from a neighbour of {} to a neighbour of {}", aiHat, biHat);
 
@@ -347,7 +347,7 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
     private Walk<Integer> generateRandomWalk(
         Graph<Integer, DefaultWeightedEdge> graphJ,
         int wj
-    ) throws AlgorithmInterruptedException{
+    ) throws AlgorithmInterruptedException {
 
         LOGGER.debug("Generating a random walk with a neighbour of {} as a start vertex", wj);
 
@@ -361,8 +361,6 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
         // generate the walk
         Walk<Integer> randomWalk = new RandomWalk<>(graphJ, startVertex, lengthRandomWalk);
         randomWalk.generateWalk();
-
-
 
         return randomWalk;
     }
@@ -446,7 +444,7 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
      * @param graphHat the graph, where the shortest path is generated.
      * @return a list of shortest path walks.
      */
-    private List<Walk<Integer>> extractWalks3(Graph<Integer, DefaultWeightedEdge> graphHat) throws AlgorithmInterruptedException{
+    private List<Walk<Integer>> extractWalks3(Graph<Integer, DefaultWeightedEdge> graphHat) throws AlgorithmInterruptedException {
 
         LOGGER.trace("Generating W(3)");
 
@@ -547,7 +545,7 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
 
         // create temporarily a source/sink vertex and
         // connect it with all start/end vertices, respectively
-        addSinkAndSource(splitGraphX, kVertices);
+        addSourceAndSink(splitGraphX, kVertices);
 
         // calculate the maximum flow of the graph with the
         // Edmonds-Karp Maximum Flow Algorithm
@@ -636,7 +634,7 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
      * @param graph a graph, which the source and sink addition is applied on.
      * @param kVertices the vertices, which have to be connected with the sink.
      */
-    private void addSinkAndSource(Graph<Integer, DefaultWeightedEdge> graph, List<Integer> kVertices) {
+    private void addSourceAndSink(Graph<Integer, DefaultWeightedEdge> graph, List<Integer> kVertices) {
 
         LOGGER.trace("Adding source and sink vertices into the flow network");
 
@@ -670,8 +668,7 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
     private List<Integer> getNeighboursOfVertexInGraph(Integer v, Set<Integer> filterVertices) throws AlgorithmInterruptedException {
 
         List<Integer> allNeighbours = Graphs.neighborListOf(mainGraph, v);
-        List<Integer> neighboursInFilterVertices =
-            allNeighbours
+        List<Integer> neighboursInFilterVertices = allNeighbours
                 .stream()
                 .filter(filterVertices::contains)
                 .toList();

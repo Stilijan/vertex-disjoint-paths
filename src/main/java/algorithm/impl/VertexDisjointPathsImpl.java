@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 
+
 public class VertexDisjointPathsImpl implements VertexDisjointPaths {
 
 
@@ -58,6 +59,9 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
     private List<Walk<Integer>> result;
 
 
+    private long algorithmDuration;
+
+
 
     public VertexDisjointPathsImpl(Graph<Integer, DefaultWeightedEdge> mainGraph,
                                    VertexPairs<Integer> vertexPairs) {
@@ -76,11 +80,13 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
 
 
     @Override
-    public boolean findDisjointWalks() {
+    public boolean findDisjointPaths() {
 
         LOGGER.debug("Finding vertex disjoint paths in a graph with {} vertices and {} edges",
             mainGraph.vertexSet().size(),
             mainGraph.edgeSet().size());
+
+        long start = System.currentTimeMillis();
 
         //================| STEP 1 |===================
 
@@ -106,7 +112,6 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
 
         List<Integer> kVerticesList = new ArrayList<>(kVertices);
 
-        assert kVerticesList.size() % 2 == 0;
 
         List<Walk<Integer>> walks1;
         List<Walk<Integer>> walks5;
@@ -119,9 +124,6 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
 
         walks1 = extractWalks1(splitGraphX);
         walks5 = extractWalks5(splitGraphX);
-
-        assert walks1.size() == numberPairs;
-        assert walks5.size() == numberPairs;
 
 
         //================| STEP 4 |===================
@@ -153,9 +155,6 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
         }
 
 
-        assert walks2.size() == numberPairs;
-        assert walks4.size() == numberPairs;
-
         //================| STEP 5 |===================
 
         Graph<Integer, DefaultWeightedEdge> graphHat = new AsSubgraph<>(mainGraph, z2Vertices);
@@ -167,7 +166,6 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
             return false;
         }
 
-        assert walks3.size() == numberPairs;
         
         //================| STEP 6 |===================
 
@@ -178,11 +176,11 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
 
             List<Walk<Integer>> walkParts = new LinkedList<>();
 
-            walkParts.add(walks1.get(i).withRemovedCycles());
-            walkParts.add(walks2.get(i).withRemovedCycles());
-            walkParts.add(walks3.get(i).withRemovedCycles());
-            walkParts.add(walks4.get(i).withRemovedCycles());
-            walkParts.add(walks5.get(i).withRemovedCycles());
+            walkParts.add(walks1.get(i).cycleFree());
+            walkParts.add(walks2.get(i).cycleFree());
+            walkParts.add(walks3.get(i).cycleFree());
+            walkParts.add(walks4.get(i).cycleFree());
+            walkParts.add(walks5.get(i).cycleFree());
 
             Walk<Integer> connectedWalk = new ConnectedWalk<>(walkParts);
 
@@ -196,9 +194,19 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
         }
 
         this.result = connectedWalks;
+
+        long end = System.currentTimeMillis();
+
+        algorithmDuration = end - start;
+
         return true;
     }
 
+
+    @Override
+    public long getAlgorithmDuration() {
+        return algorithmDuration;
+    }
 
 
     @Override
@@ -211,23 +219,23 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
 
         for (int i = 0; i < result.size(); i++) {
 
-            List<Integer> walk = result.get(i).getPath();
+            List<Integer> path = result.get(i).getPath();
 
-            for (int j = 0; j < walk.size(); j++) {
+            for (int j = 0; j < path.size(); j++) {
 
-                int currentVertex = walk.get(j);
+                int currentVertex = path.get(j);
 
-                // Check if the current and the previous vertex are neighbours
-                if (j > 0 && mainGraph.getEdge(walk.get(j - 1), currentVertex) == null) {
+                // Are the current and the previous vertex neighbours?
+                if (j > 0 && mainGraph.getEdge(path.get(j - 1), currentVertex) == null) {
 
-                    int prevVertex = walk.get(j - 1);
+                    int prevVertex = path.get(j - 1);
                     String message =
                         "Edge %d - %d in walk %d doesn't exist".formatted(prevVertex, currentVertex, i + 1);
 
                     throw new InvalidAlgorithmResultException(message);
                 }
 
-                // Check if all vertices are unique
+                // Is the current vertex unique?
                 if (disjointVerticesMap.containsKey(currentVertex)) {
 
                     String message =
@@ -256,7 +264,7 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
     }
 
     /**
-     * Chooses uniformly vertices from {@code vertexSet} and puts them in a {@code K} vertex set.
+     * Chooses uniformly vertices from {@code x1VertexSet} and puts them in a {@code K} vertex set.
      *
      * @param x1VertexSet vertex set to be chosen from.
      * @return a set of vertices, namely K.
@@ -279,7 +287,6 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
 
         while (kVertexSet.size() != kVertexSetCapacity) {
 
-            // choose a random vertex from X1 and add it to K
             int randomIndex = RANDOM.nextInt(x1VertexSet.size());
             int randomVertex = new ArrayList<>(x1VertexSet).get(randomIndex);
 
@@ -289,6 +296,7 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
 
         return kVertexSet;
     }
+
 
     /**
      * Chooses randomly vertices from {@code vertexSet} with the specified {@code probability}.
@@ -322,11 +330,11 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
 
         LOGGER.debug("Generating the shortest path from a neighbour of {} to a neighbour of {}", aiHat, biHat);
 
-        List<Integer> neighboursOfAiHatInZ2 = getNeighboursOfVertexInGraph(aiHat, graphYiHat.vertexSet());
-        int aiStar = neighboursOfAiHatInZ2.get(RANDOM.nextInt(neighboursOfAiHatInZ2.size()));
+        List<Integer> neighboursOfAiHatInGraphYiHat = getFilteredNeighboursOfVertex(aiHat, graphYiHat.vertexSet());
+        int aiStar = neighboursOfAiHatInGraphYiHat.get(RANDOM.nextInt(neighboursOfAiHatInGraphYiHat.size()));
 
-        List<Integer> neighboursOfBiHatInZ2 = getNeighboursOfVertexInGraph(biHat, graphYiHat.vertexSet());
-        int biStar = neighboursOfBiHatInZ2.get(RANDOM.nextInt(neighboursOfBiHatInZ2.size()));
+        List<Integer> neighboursOfBiHatInGraphYiHat = getFilteredNeighboursOfVertex(biHat, graphYiHat.vertexSet());
+        int biStar = neighboursOfBiHatInGraphYiHat.get(RANDOM.nextInt(neighboursOfBiHatInGraphYiHat.size()));
 
         Walk<Integer> walk = new ShortestPathWalk<>(graphYiHat, aiStar, biStar);
         walk.generateWalk();
@@ -351,14 +359,11 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
 
         LOGGER.debug("Generating a random walk with a neighbour of {} as a start vertex", wj);
 
-        // get all neighbours of wj, which are in graphJ
-        List<Integer> neighboursInZ1 = this.getNeighboursOfVertexInGraph(wj, graphJ.vertexSet());
+        List<Integer> neighboursInGraphJ = getFilteredNeighboursOfVertex(wj, graphJ.vertexSet());
 
-        // get a random neighbour of wj as a start vertex
         int startVertex =
-            neighboursInZ1.get(RANDOM.nextInt(neighboursInZ1.size()));
+                neighboursInGraphJ.get(RANDOM.nextInt(neighboursInGraphJ.size()));
 
-        // generate the walk
         Walk<Integer> randomWalk = new RandomWalk<>(graphJ, startVertex, lengthRandomWalk);
         randomWalk.generateWalk();
 
@@ -416,11 +421,8 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
 
         for (int i = 0; i < numberPairs; i++) {
 
-            // get the endpoint of walks1.get(i)
             int aiTilde = aTildeVertices.get(i);
 
-
-            // generate a normal random walk
             Walk<Integer> randomWalk = generateRandomWalk(graphJ, aiTilde);
 
             walks2.add(randomWalk);
@@ -444,7 +446,8 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
      * @param graphHat the graph, where the shortest path is generated.
      * @return a list of shortest path walks.
      */
-    private List<Walk<Integer>> extractWalks3(Graph<Integer, DefaultWeightedEdge> graphHat) throws AlgorithmInterruptedException {
+    private List<Walk<Integer>> extractWalks3(Graph<Integer, DefaultWeightedEdge> graphHat)
+            throws AlgorithmInterruptedException {
 
         LOGGER.trace("Generating W(3)");
 
@@ -480,10 +483,8 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
 
         for (int i = 0; i < numberPairs; i++) {
 
-            // get the endpoint of walks1.get(i)
             int biTilde = bTildeVertices.get(i);
 
-            // generate a normal random walk
             Walk<Integer> randomWalk = generateRandomWalk(graphJ, biTilde);
 
             walks4.add(randomWalk.reversed());
@@ -535,7 +536,7 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
      * @param splitGraphX a graph with split vertices, where the network flow algorithm is performed.
      * @param kVertices the end vertices of the paths
      * @return a flow map of edge - double pairs, denoting the flow value of each edge in the graph.
-     * @throws AlgorithmInterruptedException if the maximum flow doesn't equal 2 * k.
+     * @throws AlgorithmInterruptedException if the maximum flow value doesn't equal 2 * k.
      */
     private Map<DefaultWeightedEdge, Double> createFlowMap(Graph<Integer, DefaultWeightedEdge> splitGraphX,
                                                            List<Integer> kVertices)
@@ -543,12 +544,9 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
 
         LOGGER.trace("Creating a flow map");
 
-        // create temporarily a source/sink vertex and
-        // connect it with all start/end vertices, respectively
+
         addSourceAndSink(splitGraphX, kVertices);
 
-        // calculate the maximum flow of the graph with the
-        // Edmonds-Karp Maximum Flow Algorithm
         EdmondsKarpMFImpl<Integer, DefaultWeightedEdge> ek = new EdmondsKarpMFImpl<>(splitGraphX);
 
         LOGGER.trace("Performing Edmonds-Karp algorithm");
@@ -582,13 +580,10 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
 
         for (int vertex : graph.vertexSet()) {
 
-            // add vertex_in in the cloned graph
-            clonedGraph.addVertex(vertex);
 
-            // add vertex_out in the cloned graph
+            clonedGraph.addVertex(vertex);
             clonedGraph.addVertex(-vertex);
 
-            // connect vertex_in and vertex_out
             clonedGraph.addEdge(vertex, -vertex);
             clonedGraph.setEdgeWeight(vertex, -vertex, 1.0);
         }
@@ -599,17 +594,12 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
                 continue;
             }
 
-            // get all incoming/outgoing edges of vertex
+
             Set<DefaultWeightedEdge> edgesOfVertex = graph.edgesOf(vertex);
 
             for (DefaultWeightedEdge edge : edgesOfVertex) {
 
-                // get source and target of edge
-                int edgeSource = graph.getEdgeSource(edge);
-                int edgeTarget = graph.getEdgeTarget(edge);
-
-                // get the neighbour of vertex
-                int neighbourOfVertex = edgeSource == vertex ? edgeTarget : edgeSource;
+                int neighbourOfVertex = Graphs.getOppositeVertex(graph, edge, vertex);
 
                 // add incoming edge to vertex_in
                 clonedGraph.addEdge(-neighbourOfVertex, vertex);
@@ -665,10 +655,9 @@ public class VertexDisjointPathsImpl implements VertexDisjointPaths {
      * @return a list of vertices, which are neighbours of {@code v} and are in {@code filterVertices}
      * @throws AlgorithmInterruptedException if {@code v} has no neighbours, that are also in {@code filterVertices}
      */
-    private List<Integer> getNeighboursOfVertexInGraph(Integer v, Set<Integer> filterVertices) throws AlgorithmInterruptedException {
+    private List<Integer> getFilteredNeighboursOfVertex(Integer v, Set<Integer> filterVertices) throws AlgorithmInterruptedException {
 
-        List<Integer> allNeighbours = Graphs.neighborListOf(mainGraph, v);
-        List<Integer> neighboursInFilterVertices = allNeighbours
+        List<Integer> neighboursInFilterVertices = Graphs.neighborListOf(mainGraph, v)
                 .stream()
                 .filter(filterVertices::contains)
                 .toList();

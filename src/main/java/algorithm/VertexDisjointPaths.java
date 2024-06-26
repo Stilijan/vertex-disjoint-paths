@@ -1,7 +1,7 @@
 package algorithm;
 
-
 import exceptions.InvalidAlgorithmResultException;
+
 
 public interface VertexDisjointPaths {
 
@@ -9,7 +9,7 @@ public interface VertexDisjointPaths {
      * Searches for disjoint paths for each pair of start/end vertices.
      * @return true, if the algorithm finds disjoint paths.
      */
-    boolean findDisjointWalks();
+    boolean findDisjointPaths();
 
     /**
      * Verifies, that the result has unique vertices
@@ -23,4 +23,7 @@ public interface VertexDisjointPaths {
      * Prints the disjoint paths.
      */
     void printDisjointPaths();
+
+
+    long getAlgorithmDuration();
 }

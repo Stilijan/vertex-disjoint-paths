@@ -19,8 +19,6 @@ public final class GraphFiles {
     public static final String RAND_300000 = RAND_LOCATION + "rand_300000.gr";
     public static final String RAND_1000000 = RAND_LOCATION + "rand_1000000.gr";
 
-
-
     private GraphFiles() {
     }
 }

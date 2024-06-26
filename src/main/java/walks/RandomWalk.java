@@ -44,10 +44,11 @@ public class RandomWalk<V> extends Walk<V> {
             previousVertex = currentVertex;
 
             List<V> neighbours = Graphs.neighborListOf(graph, currentVertex);
+            double probability = 1.0f / graph.degreeOf(currentVertex);
 
             for (int j = 0; j < neighbours.size(); j++) {
 
-                if (Math.random() <= 1.0f / graph.degreeOf(currentVertex) || j == neighbours.size() - 1) {
+                if (Math.random() <= probability || j == neighbours.size() - 1) {
 
                     currentVertex = neighbours.get(j);
                     break;

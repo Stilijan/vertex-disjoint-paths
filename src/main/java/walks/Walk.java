@@ -34,7 +34,7 @@ public abstract class Walk<V> {
      *
      * @return this walk with the removed cycles.
      */
-    public Walk<V> withRemovedCycles() {
+    public Walk<V> cycleFree() {
 
         Map<V, Integer> map = new HashMap<>();
 

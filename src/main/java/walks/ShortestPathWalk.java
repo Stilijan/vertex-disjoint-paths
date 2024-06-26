@@ -25,7 +25,6 @@ public class ShortestPathWalk<V> extends Walk<V> {
 
         LOGGER.debug("Generating the shortest path between {} and {}", startVertex, endVertex);
 
-
         BidirectionalDijkstraShortestPath<V, DefaultWeightedEdge> dijkstra =
             new BidirectionalDijkstraShortestPath<>(graph);
 
@@ -35,8 +34,10 @@ public class ShortestPathWalk<V> extends Walk<V> {
                 .getVertexList();
         } catch (NullPointerException e) {
 
-            LOGGER.error("There is no path between {} and {}", startVertex, endVertex);
-            throw new AlgorithmInterruptedException("There is no path between %s and %s".formatted(startVertex, endVertex));
+            String message =
+                    "There is no path between %s and %s".formatted(startVertex, endVertex);
+            LOGGER.error(message);
+            throw new AlgorithmInterruptedException(message);
         }
     }
 }

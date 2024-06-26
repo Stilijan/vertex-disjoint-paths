@@ -31,6 +31,5 @@ public class ConnectedWalk<V> extends Walk<V>{
 
             this.path.addAll(walk.getPath());
         }
-
     }
 }

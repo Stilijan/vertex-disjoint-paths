@@ -6,25 +6,25 @@ A Java implementation of the proposed algorithm in this <a href="https://dl.acm.
 
 - Java 21+
 - Maven 3.9.5+
-- WSL (if you are using Powershell)
+- WSL (for Windows users)
 
 ## Execution commands
 
 To generate the graph files in `inputs/rands`, type:
 
 ```shell
-$ ./gr_gen.sh
+$ ./graph-gen.sh
 ```
 or 
 ```shell
-$ bash ./gr_gen.sh
+$ bash ./graph-gen.sh
 ```
-if you are on Windows with WSL. This will generate `.gr` files into the `./inputs/rands/` folder.
+if you are on Windows with WSL. This will generate `.gr` files into the `./inputs/` folder.
 
 To compile the project, type:
 
 ```shell
-$ mvn clean install
+$ mvn install
 ```
 To execute the algorithm, type:
 
@@ -32,7 +32,7 @@ To execute the algorithm, type:
 $ mvn exec:java -Dexec.args="<path-to-gr-file> <number-pairs> <mode> [<iterations>]"
 ```
 
-For the third argument you can either choose `DEFAULT_MODE` OR `BENCHMARK_MODE`. Optionally, if you want to benchmark the algorithm, 
-you can specify a fourth argument for the benchmarking iterations. Note, that if you are on Powershell, you must type single quotes `''` around
+For the third argument you can either choose `DEFAULT_MODE` or `BENCHMARK_MODE`. Optionally, if you want to benchmark the algorithm, 
+you can specify a fourth argument for the benchmarking iterations. Note that if you are on Powershell, you must type single quotes `''` around
 the `-Dexec.args="..."` argument.
 

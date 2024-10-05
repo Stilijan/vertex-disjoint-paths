@@ -4,8 +4,9 @@
 function calculate_m() {
     local n=$1
     local c=$2
-    local m_float=$(echo "$c * $n * l($n)" | bc -l)
-    echo ${m_float%.*}  # Round down to the nearest integer
+    local m_float
+    m_float=$(echo "$c * $n * l($n)" | bc -l)
+    echo "${m_float%.*}"  # Round down to the nearest integer
 }
 
 # main.Main function to generate random graphs
@@ -20,13 +21,13 @@ function generate_graphs() {
     for ((i = 0; i < ${#n_values[@]}; i++)); do
         local n=${n_values[i]}
         local c=${c_values[i]}
-        local m=$(calculate_m $n $c)
+        local m
+        m=$(calculate_m "$n" "$c")
         local seed=${seeds[i]}
         local output_file="rand_${n}.gr"
         
         echo "Generating a random graph with n=$n, m=$m, and seed=$seed"
-
-        ./gens/sprand.exe $n $m 1 1 $seed > "./inputs/rands/$output_file"
+        ./gens/sprand.exe "$n" "$m" 1 1 "$seed" > "./inputs/$output_file"
     done
 }
 
@@ -37,4 +38,5 @@ if [ ! -x "./gens/sprand.exe" ]; then
 fi
 
 # Call the main function to generate graphs
+mkdir "inputs"
 generate_graphs
